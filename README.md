@@ -1,7 +1,9 @@
-## **please show my work some love by starring this repository**
+## **`please show my work some love by starring this repository`**
 # StudyWindow
-**star project to recieve feedback about the latest commits**
+**`star project to recieve feedback about the latest commits`**
+
 Welcome to the StudyWindow! This application is designed to help users monitor their study time and stay motivated. Below you'll find an overview of the features and instructions on how to use the application.
+
 
 ## Features
 
