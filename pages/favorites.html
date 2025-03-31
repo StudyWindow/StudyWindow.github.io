@@ -42,8 +42,21 @@
   </div> 
         </nav>
 
-        <p class="text-light"> page still under construction, Thank you</p>
-             <footer class="bg-dark text-white text-center py-1">
+        <div class="card bg-dark h-100"id="studentOverview">
+      
+      <div class="card-body bg-dark h-100" id="card_student"></div>
+    </div>
+    <div class="progress rounded-0" style="position:fixed;top:0;bottom:0;left:0;right:0;height:5px;">
+                <div id="updatePageContent" class= "progress-bar progress-bar-striped progress-bar-animated bg-success" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria_valuemax="100"></div>
+
+        </div>
+        <div>
+       <nav class="w-100 overflow-scroll" aria-label="Pagination">
+  <ul id="pagination-unit" class="pagination pagination-sm justify-content-center">
+  </ul>
+</nav>
+        </div>
+        <footer class="bg-dark text-white text-center py-1">
   <div class="container">
       <div class="mt-3">
       <p>&copy; 2025 StudyWindow. All rights reserved.</p>
@@ -52,7 +65,12 @@
       </p>
     </div>
   </div>
-</footer> 
-        </div>
+</footer>
+<script>
+  //const el = document.querySelector('img');
+  //const observer = lozad(el); 
+  //observer.observe();
+</script>
+    <script src="../js/src/favorites.js"></script>
   </body>
 </html>

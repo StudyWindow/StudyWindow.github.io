@@ -123,6 +123,7 @@ function getDataJson(){
   if (user_fav_list==null){
     user_fav_list=[]
   }
+
   let url="https://raw.githubusercontent.com/JamyJones/YtStudy/refs/heads/main/data.json"
   return new Promise((resolve)=>{
     fetch(url,{method:"GET"})
@@ -130,7 +131,23 @@ function getDataJson(){
       let student,name,time,status,icon,views,index=0;
       for(let i of Object.keys(res)){
         let user_love_status="false";
-        if(index>0 && index%9==0){ //add nine elements per each page
+        if(index>0 && index%20==0){//add twenty elements per each page
+
+        }
+        name=res[i]['name']
+        //add only students that the user loves
+        if (user_fav_list.indexOf(name)!=-1){
+          user_love_status="true"
+          time=res[i]['release_timestamp']
+          status=res[i]['live_status']
+          icon=res[i]['url']
+          views=res[i]['concurrent_view_count']
+          student= new StudentStreamer(name,time,status,icon,views,index,user_love_status)
+          arr_students.push(student);
+          index+=1;
+        }
+      }
+      if (arr_students.length>0){
           page_count+=1
           page_label=`page_${page_count}`
           const new_students_elm_carrier=document.createElement("div")
@@ -143,34 +160,22 @@ function getDataJson(){
             "exists_in_dom":false
           }
           arr_students.length=0
-        }
-        name=res[i]['name']
-        if (user_fav_list.indexOf(name)!=-1){
-          user_love_status="true"
-        }
-        time=res[i]['release_timestamp']
-        status=res[i]['live_status']
-        icon=res[i]['url']
-        views=res[i]['concurrent_view_count']
-        student= new StudentStreamer(name,time,status,icon,views,index,user_love_status)
-        arr_students.push(student);
-        index+=1;
-      }
-      if (arr_students.length>0){
-        page_count+=1
-        page_label=`page_${page_count}`
-        pages_obj[page_label]={
-            "students":arr_students.slice(),
-            "exists_in_dom":false
-        }
-        pages_obj["length"]=page_count
-        arr_students.length=0
         resolve()
       }
+        pages_obj["length"]=page_count //set the nimber of pages
     })
 }
   )}
 async function page_update_time(){
+  let user_fav_list=JSON.parse(localStorage.getItem("sw_favorite_students"));
+  if(user_fav_list==null){
+    alertUser("You Have not yet added any favorite channels, add some channels and refresh the page please!")
+    return null
+  }
+  if(user_fav_list.length==0){
+    alertUser("Please add some channels and refresh this page!")
+    return null
+  }
   fetch("https://api.github.com/repos/JamyJones/YtStudy/commits?path=data.json&per_page=1",
     {
       method:"GET",
@@ -195,13 +200,17 @@ async function page_update_time(){
     const [hours,minutes,seconds] = passedTime.split(':').map(Number)
     const wait_time= hours*3600+minutes*60+seconds
     await getDataJson()
+   if(pages_obj['length']==0){
+     alertUser("NONE OF YOUR FAVORITES IS LIVE, PLEASE GO SEE STREAMS PAGE FOR MORE LIVE CHANNELS.")
+     return null;
+   }
     await create_page_numbers()
     displayPageContent(1,document.getElementById('1'))
     updateTimeProgress(wait_time)
   })
   .catch(error =>{
     console.error('There was a problem with the fetch operation:', error);
-    alertUser("We are having trouble fetching information from our database, please check that you are not blocking access to endpoint *.github.*, refresh the page please")
+    alertUser("We are having trouble fetching information from our database, refresh the page please")
   })
 }
 page_update_time()
@@ -211,7 +220,7 @@ function displayPageContent(page_id_index,page){
   let active_card=null
   page.classList.add('active')
   if (pages_obj[page_id]['exists_in_dom']){
-    // find it's id which should correspond with page_id
+    // find it's key which should correspond with page_id
     if(activated_cards.length>0){
        activated_cards[0].classList.add('hidden')
        activated_cards[1].classList.remove('active')
@@ -231,7 +240,7 @@ function displayPageContent(page_id_index,page){
     activated_cards.push(active_card,page)
      active_card.classList.remove('hidden')
      pages_obj[page_id]['exists_in_dom']=true
-     pages_obj[page_id]['students'].forEach((e)=>{
+     pages_obj[page_id]['students'].forEach((e)=>{//e->Each student Object
        e.createStudent(active_card);
        e.updateStudentStatus();
        e.UpdateStudentHour();
@@ -241,16 +250,15 @@ function displayPageContent(page_id_index,page){
 
 async function create_page_numbers(){
   return new Promise((resolve)=>{
-
   const page_numbers_par_elm=document.getElementById('pagination-unit')
   /**
    * subtract 1 from the pages_obj length because there are n_keys+1
    * 1=>length key
    **/
-  for (let i=1;i<=pages_obj['length']-1;i++){
+  for (let i=1;i<=pages_obj['length'];i++){
     page_numbers_par_elm.innerHTML+=`<li id="${i}" class="page-item"><a class="page-link" onclick="displayPageContent(${i},this)">${i}</a></li>`
   }
-    resolve()
+ resolve()
 })
 }
 
