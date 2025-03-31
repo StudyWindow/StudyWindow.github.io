@@ -3,6 +3,11 @@ let arr_students=[]
 const pages_obj={}
 const activated_cards=[]
 const main_student_card=document.getElementById("studentOverview")
+//only runs once for new users
+if (localStorage.getItem("sw_favorite_students")==null){
+  const init_student_str=JSON.stringfy([])
+  localStorage.setItem("sw_favorite_students",init_student_str)
+}
 class StudentStreamer{
   constructor(name,stream_hours,status,image_url,views,index,user_love_status){
     this.name=name
