@@ -23,8 +23,7 @@ sw_fav_streams.innerHTML=FAV_STREAMS
 leaderboard.innerHTML=LEADERBOARD
 sw_about.innerHTML=ABOUT
 
-/*
 create_streams()
 create_fav_streams()
 create_leaderboard(supabase)
-*/
+
