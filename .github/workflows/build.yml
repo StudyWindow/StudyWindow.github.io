@@ -15,6 +15,9 @@ jobs:
           npm run build
       - name: Release build
         run: |
+          git clone "https://github.com/StudyWindow/StudyWindow.github.io/"
+          cd StudyWindow.github.io
+          cp -r ../dist .
           git config --global user.name "John Delvin"
           git config --global user.email "johndelvin51@gmail.com"
           git config --global --add safe.directory $(pwd)
