@@ -6,7 +6,8 @@
     "build": "webpack"
   },
   "dependencies":{
-    "@supabase/supabase-js": "2.49.8"
+    "@supabase/supabase-js": "2.49.8",
+    "ag-grid-community":"33.3.1"
   },
   "devDependencies": {
     "webpack": "^5.x",
