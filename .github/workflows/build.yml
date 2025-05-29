@@ -1,0 +1,26 @@
+name: Bundle App For Production
+on:
+  push:
+    branches: "main"
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Files:
+        uses: actions/checkout@v4
+      - name: Build project
+        run: |
+          npm install --save-dev
+          npm run build
+      - name: Release build
+        run: |
+          git config --global user.name "John Delvin"
+          git config --global user.email "johndelvin51@gmail.com"
+          git config --global --add safe.directory $(pwd)
+          git add .
+          git commit -m "upload build"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.TK }}
+
