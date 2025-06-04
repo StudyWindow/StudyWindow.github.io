@@ -1,5 +1,5 @@
 import { NAVBAR_STR,PUBLIC_PROJECT_AUTH, LOGIN_PROFILE_IMAGE,LOGIN_N_SIGNUP,LOGIN_O_SIGNUP,USER_PROFILE} from '/static/js/src/strings.js';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 import config_global from '/static/js/utils/globals.js'
 import StudentStreamer from '/static/js/utils/studentCard.js'
 import create_profile from '/static/js/src/profile.js'
@@ -285,16 +285,14 @@ export function toggleUserLove(this_element){
     }
   }
 }
-function updateTimeProgress(wait_time,arr_students2){
-  setInterval(function(){
+function updateTimeProgress(arr_students2){
     fetch(DATA_URL,{method:"GET"})
     .then(i=>i.json()).then(function(data){
    arr_students2.forEach((s)=>{
      s.refreshStudentCard(data)})
     })
   }
-    ,1000*60*2)//2 minutes
-}
+
 export async function create_page_numbers(pages_obj,is_favorite_page){
   const page_numbers_par_elm=is_favorite_page?document.getElementById('pagination-unit_fav'):document.getElementById('pagination-unit_streams')
   return new Promise((resolve)=>{
@@ -354,7 +352,7 @@ is_favorite_page?activated_cards_favs.push(active_card,page):activated_cards_str
    })
   }
 }
-export async function page_update_time(is_favorite_page){
+export async function page_update_time(is_favorite_page,supabase){
   fetch(config_global["COMMITS_URL"],
     {
       method:"GET",
@@ -380,8 +378,8 @@ export async function page_update_time(is_favorite_page){
     const wait_time= hours*3600+minutes*60+seconds
    const {arr_students2,pages_obj} = await getDataJson(is_favorite_page)
     await create_page_numbers(pages_obj,is_favorite_page)
+    subscribe_to_auto_gif_refresh(arr_students2,supabase)
     is_favorite_page?displayPageContent(pages_obj,1,document.getElementById('1_fav'),is_favorite_page):displayPageContent(pages_obj,1,document.getElementById('1_streams'),is_favorite_page)
-    updateTimeProgress(wait_time,arr_students2)
   })
   .catch(error =>{
     console.error('There was a problem with the fetch operation:', error);
@@ -509,4 +507,28 @@ document.getElementById("logout-btn").addEventListener('click',async function(){
       updateUI('profile',supabase)
     }
 )
+}
+export async function subscribe_to_auto_gif_refresh(arr_students2,supabase){
+  const gif_last_update_time= await supabase
+    .from("gif-update-time")
+    .select("time")
+  localStorage.setItem("gif-update-time",gif_last_update_time.data[0]['time'])
+  const changes = supabase
+  .channel('table-db-changes')
+  .on(
+    'postgres_changes',
+    {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'gif-update-time',
+      filter:`time=neq.${localStorage.getItem('gif-update-time',)}`
+    },
+    (payload) => {localStorage.setItem(payload['new']['time']);
+updateTimeProgress(arr_students2)
+    }
+  )
+  .subscribe()
+}
+export function unsubscribe_to_auto_gif_refresh(supabase, subscription){
+  ///
 }
