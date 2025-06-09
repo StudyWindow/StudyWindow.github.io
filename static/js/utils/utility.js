@@ -1,6 +1,7 @@
 import { NAVBAR_STR,PUBLIC_PROJECT_AUTH, LOGIN_PROFILE_IMAGE,LOGIN_N_SIGNUP,LOGIN_O_SIGNUP,USER_PROFILE} from '/static/js/src/strings.js';
 import config_global from '/static/js/utils/globals.js'
 import StudentStreamer from '/static/js/utils/studentCard.js'
+import { createClient } from '@supabase/supabase-js';
 import create_profile from '/static/js/src/profile.js'
 import  create_edit_profile from '/static/js/src/edit_profile.js'
 import auth_user from '/static/js/src/auth.js'
